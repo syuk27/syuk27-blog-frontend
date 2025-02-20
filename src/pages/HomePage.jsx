@@ -6,7 +6,7 @@ const Home = () => {
   const navigate = useNavigate();
 
   const HandleNewPost = () => {
-    navigate("/admin_post");
+    navigate("/admin_editor");
   }
 
   return (
