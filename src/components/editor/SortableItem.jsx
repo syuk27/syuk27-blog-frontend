@@ -1,7 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Trash2 } from "lucide-react";
-import ImageUploader from "./ImageUploader";
+import { ImageUploader } from "./ImageUploader";
 import Toolbar from "./Toolbar";
 
 const SortableItem = ({
@@ -36,11 +36,13 @@ const SortableItem = ({
 
       {/* 이미지 미리보기 */}
       {post.image && (
-        <img
-          src={post.image}
-          alt="Uploaded"
-          className="w-full h-40 object-cover rounded-md"
-        />
+        <>
+          <img
+            src={post.image}
+            alt="Uploaded"
+            className="w-full h-40 object-cover rounded-md"
+          />
+        </>
       )}
 
       {/* 글자 크기 조절 */}
