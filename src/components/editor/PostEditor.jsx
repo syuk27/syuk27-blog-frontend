@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -8,9 +8,12 @@ import {
 import SortableItem from "./SortableItem";
 import { v4 as uuidv4 } from "uuid";
 import { cloudinaryUpload, handleImageUpload } from "./ImageUploader";
+import axios from "axios";
 
 const PostEditor = () => {
   const [posts, setPosts] = useState([]);
+
+  const [userPostBlockList, setUserPostBlockList] = useState([]);
 
   console.log("posts", posts);
 
@@ -28,20 +31,19 @@ const PostEditor = () => {
       const file = e.target.files[0];
       const newImage = URL.createObjectURL(file);
       console.log("addImage", file);
-      
+
       /* 클라우드너리 테스트 */
-      let formData = new FormData();
+      let signature;
       if (file) {
         console.log("111", file);
-        const uploadedData = await cloudinaryUpload(file);
-        for (const[key, value] of uploadedData.entries()) {
-          formData.append(key, value);
-        }
+        signature = await cloudinaryUpload(file);
       }
 
       setPosts((prev) =>
         prev.map((post) =>
-          post.id === id ? { ...post, image: newImage, formData: formData} : post
+          post.id === id
+            ? { ...post, image: newImage, formData: signature }
+            : post
         )
       );
     }
@@ -83,12 +85,52 @@ const PostEditor = () => {
 
   // 모든 블록 저장
   const allBlockSave = async () => {
-    posts.map((post) => {
-      if(post.formData instanceof FormData && post.formData.has("cloudName")) {
-        const cloudImg_url = handleImageUpload(post.formData);
+    console.log("allBlockSave", posts);
+
+    const updatedPosts = await Promise.all(
+      posts.map(async (post) => {
+        console.log("post.formData.has", post.formData.has("cloudName"));
+        // post.formData instanceof FormData && post.formData.has("cloudName")
+        //   ? { ...post, cloudImg_url: handleImageUpload(post.formData) }
+        //   : post;
+        if (
+          post.formData instanceof FormData &&
+          post.formData.has("cloudName")
+        ) {
+          return {
+            ...post,
+            cloudImg_url: await handleImageUpload(post.formData),
+            id: ""
+          };
+        }
+        return post;
+      })
+    );
+
+    setUserPostBlockList(updatedPosts);
+  };
+
+  useEffect(() => {
+    let userPost = {
+      user: {
+       id: 1
       }
-    });
-  }
+    };
+    console.log("userPostBlockList", userPostBlockList);
+    if (userPostBlockList.length > 0) {
+      userPost.userPostBlockList = userPostBlockList;
+      console.log("userPost", userPost);
+
+      axios
+        .post("http://localhost:8080/user_posts", userPost)
+        .then((response) => {
+          console.log("response", response);
+        })
+        .catch((error) => {
+          console.log("error", error);
+        });
+    }
+  }, [userPostBlockList]);
 
   return (
     <div className="p-4 space-y-4">
@@ -100,7 +142,7 @@ const PostEditor = () => {
       </button>
 
       <button
-        onClick={addPost}
+        onClick={allBlockSave}
         className="bg-blue-500 text-white px-4 py-2 rounded-md ml-5"
       >
         모든 블록 저장
