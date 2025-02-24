@@ -3,7 +3,6 @@ import { ImagePlus } from "lucide-react";
 import { useState } from "react";
 
 const ImageUploader = ({ onImageUpload, id }) => {
-
   return (
     // 이미지 업로드 버튼
     <label className="cursor-pointer flex items-center gap-2 text-blue-500">
@@ -41,7 +40,7 @@ const cloudinaryUpload = async (imageFile) => {
         throw new Error("response status error");
       });
 
-      return formData;
+    return formData;
   } catch (error) {
     console.log("cloudinaryUpload", error);
   }
@@ -52,12 +51,17 @@ const handleImageUpload = async (formData) => {
     const cloudName = formData.get("cloudName");
     console.log("formData2", formData, cloudName);
 
-    if(cloudName !== undefined) {
-      axios
-        .post(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, formData)
-        .then((response) => {
-          return response.secure_url;
-        });
+    if (cloudName !== undefined) {
+      const response = await axios.post(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        formData
+      );
+
+      console.log("handleImageUpload", response);
+
+      if (response.status === 200) {
+        return response.data.secure_url;
+      }
     }
   } catch (error) {
     console.log("handleImageUpload", error);
