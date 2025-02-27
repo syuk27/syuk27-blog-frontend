@@ -1,6 +1,10 @@
 import axios from "axios";
 import { ImagePlus } from "lucide-react";
 import { useState } from "react";
+import {
+  uploadImageToCloudinary,
+  getCloudinarySignature,
+} from "../../api/cloudinary/cloudinary";
 
 const ImageUploader = ({ onImageUpload, id }) => {
   return (
@@ -24,21 +28,19 @@ const cloudinaryUpload = async (imageFile) => {
   const formData = new FormData();
   console.log("asdasd1", imageFile);
   try {
-    axios
-      .get("http://localhost:8080/api/cloudinary/signature")
-      .then((response) => {
-        if (response.status === 200) {
-          const data = response.data;
-          formData.append("file", imageFile);
-          formData.append("api_key", data.api_key);
-          formData.append("timestamp", data.timestamp);
-          formData.append("signature", data.signature);
-          formData.append("cloudName", data.cloudName);
+    getCloudinarySignature().then((response) => {
+      if (response.status === 200) {
+        const data = response.data;
+        formData.append("file", imageFile);
+        formData.append("api_key", data.api_key);
+        formData.append("timestamp", data.timestamp);
+        formData.append("signature", data.signature);
+        formData.append("cloudName", data.cloudName);
 
-          return formData;
-        }
-        throw new Error("response status error");
-      });
+        return formData;
+      }
+      throw new Error("response status error");
+    });
 
     return formData;
   } catch (error) {
@@ -48,23 +50,18 @@ const cloudinaryUpload = async (imageFile) => {
 
 const handleImageUpload = async (formData) => {
   try {
-    const cloudName = formData.get("cloudName");
-    console.log("formData2", formData, cloudName);
-
-    if (cloudName !== undefined) {
-      const response = await axios.post(
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-        formData
-      );
-
+    if (formData instanceof FormData && formData.has("cloudName")) {
+      const response = await uploadImageToCloudinary(formData);
       console.log("handleImageUpload", response);
-
       if (response.status === 200) {
         return response.data.secure_url;
       }
     }
+
+    return "";
   } catch (error) {
-    console.log("handleImageUpload", error);
+    console.log("handleImageUpload error", error);
+    return "error";
   }
 };
 

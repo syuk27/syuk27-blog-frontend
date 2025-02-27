@@ -1,28 +1,33 @@
-import { useEffect, useState } from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
   SortableContext,
-  verticalListSortingStrategy,
   arrayMove,
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import SortableItem from "./SortableItem";
+import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { createUserPost } from "../../api/userpost/userpost";
 import { cloudinaryUpload, handleImageUpload } from "./ImageUploader";
-import axios from "axios";
+import SortableItem from "./SortableItem";
 
 const PostEditor = () => {
   const [posts, setPosts] = useState([]);
-
   const [userPostBlockList, setUserPostBlockList] = useState([]);
-
-  console.log("posts", posts);
 
   // 📝 새 블록 추가 (글 + 이미지 가능)
   const addPost = () => {
     setPosts((prevPosts) => [
       ...prevPosts,
-      { id: uuidv4(), content: "", image: null, fontSize: "text-base" },
+      {
+        id: uuidv4(),
+        content: "",
+        image: null,
+        fontSize: "text-base",
+        blockOrder: ++prevPosts.length,
+      },
     ]);
+
+    console.log("posts", posts);
   };
 
   // 📸 이미지 추가
@@ -30,19 +35,17 @@ const PostEditor = () => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       const newImage = URL.createObjectURL(file);
-      console.log("addImage", file);
 
       /* 클라우드너리 테스트 */
-      let signature;
+      let signatureFormData = new FormData();
       if (file) {
-        console.log("111", file);
-        signature = await cloudinaryUpload(file);
+        signatureFormData = await cloudinaryUpload(file);
       }
 
       setPosts((prev) =>
         prev.map((post) =>
           post.id === id
-            ? { ...post, image: newImage, formData: signature }
+            ? { ...post, image: newImage, formData: signatureFormData }
             : post
         )
       );
@@ -51,7 +54,7 @@ const PostEditor = () => {
 
   // ✍️ 게시글 내용 변경
   const handleChange = (id, value) => {
-    console.log("handleChange", id, value);
+    console.log("text", value)
     setPosts((prev) =>
       prev.map((post) => (post.id === id ? { ...post, content: value } : post))
     );
@@ -59,7 +62,6 @@ const PostEditor = () => {
 
   // 🔤 글자 크기 변경
   const changeFontSize = (id, newSize) => {
-    console.log("id, newSize", id, newSize);
     setPosts((prev) =>
       prev.map((post) =>
         post.id === id ? { ...post, fontSize: newSize } : post
@@ -79,50 +81,45 @@ const PostEditor = () => {
 
   // 🗑️ 게시글 삭제
   const deletePost = (id) => {
-    console.log("id", id);
     setPosts(posts.filter((post) => post.id !== id));
   };
 
   // 모든 블록 저장
   const allBlockSave = async () => {
-    console.log("allBlockSave", posts);
-
+    let isReady = true;
     const updatedPosts = await Promise.all(
       posts.map(async (post) => {
-        console.log("post.formData.has", post.formData.has("cloudName"));
-        // post.formData instanceof FormData && post.formData.has("cloudName")
-        //   ? { ...post, cloudImg_url: handleImageUpload(post.formData) }
-        //   : post;
-        if (
-          post.formData instanceof FormData &&
-          post.formData.has("cloudName")
-        ) {
-          return {
-            ...post,
-            cloudImg_url: await handleImageUpload(post.formData),
-            id: ""
-          };
+        const response = await handleImageUpload(post.formData);
+        if (response === "error") {
+          isReady = false;
         }
-        return post;
+
+        return {
+          ...post,
+          cloudImg_url: response,
+          id: "",
+        };
       })
     );
 
-    setUserPostBlockList(updatedPosts);
+    if (isReady) {
+      setUserPostBlockList(updatedPosts);
+    }
+    console.log("updatedPosts", updatedPosts);
   };
 
   useEffect(() => {
     let userPost = {
       user: {
-       id: 1
-      }
+        id: 1,
+      },
     };
     console.log("userPostBlockList", userPostBlockList);
     if (userPostBlockList.length > 0) {
       userPost.userPostBlockList = userPostBlockList;
       console.log("userPost", userPost);
 
-      axios
-        .post("http://localhost:8080/user_posts", userPost)
+      createUserPost(userPost)
         .then((response) => {
           console.log("response", response);
         })
