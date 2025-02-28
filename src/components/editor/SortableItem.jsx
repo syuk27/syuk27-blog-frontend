@@ -3,6 +3,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { Trash2 } from "lucide-react";
 import CustomQuill from "./CustomQuill";
 import { ImageUploader } from "./ImageUploader";
+import { useEffect } from "react";
 
 const SortableItem = ({
   id,
@@ -15,9 +16,6 @@ const SortableItem = ({
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
 
-  // 글자 드래그 후 글자 크기 변경 나중에 구현
-  // const [content, setContent] = useState(post.content || "");
-
   // 버튼 클릭 시 드래그 방지 (이벤트 전파 중지)
   const handleButtonClick = (event) => {
     event.stopPropagation(); // 버튼 클릭이 드래그를 방해하지 않도록 설정
@@ -26,6 +24,10 @@ const SortableItem = ({
   const onChangeHandle = (value) => {
     onChange(id, value);
   };
+
+  // const customAttributes = {
+  //   ...attributes, tabIndex : post.blockOrder
+  // }
 
   return (
     <div
@@ -50,18 +52,13 @@ const SortableItem = ({
         </>
       )}
 
-      {/* 글자 크기 조절 */}
-      {/* <Toolbar
-        onFontSizeChange={onFontSizeChange}
-        id={id}
-      /> */}
-
       {/* 글 입력 */}
       <CustomQuill
         className={`w-full p-2 border rounded-md resize-none ${post.fontSize}`}
         value={post.content || ""}
         onChangeHandle={onChangeHandle}
         placeholder="여기에 글을 입력하세요..."
+        count={post.blockOrder}
       />
 
       {/* 삭제 버튼 */}
