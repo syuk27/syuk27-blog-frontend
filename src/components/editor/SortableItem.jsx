@@ -1,9 +1,8 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Trash2 } from "lucide-react";
-import CustomQuill from "../CustomQuill";
+import CustomQuill from "./CustomQuill";
 import { ImageUploader } from "./ImageUploader";
-import Toolbar from "./Toolbar";
 
 const SortableItem = ({
   id,
@@ -52,10 +51,10 @@ const SortableItem = ({
       )}
 
       {/* 글자 크기 조절 */}
-      <Toolbar
+      {/* <Toolbar
         onFontSizeChange={onFontSizeChange}
         id={id}
-      />
+      /> */}
 
       {/* 글 입력 */}
       <CustomQuill

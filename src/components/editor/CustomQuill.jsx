@@ -70,7 +70,7 @@ const CustomQuill = ({ className, value, onChangeHandle, placeholder }) => {
         item.addEventListener("click", (event) => {
             console.log("sizePicker.style", sizePicker)
             console.log("event", event.target.dataset.value)
-            sizePicker[0].style.setProperty("--tw-content", `"${event.target.dataset.value}"`)
+            sizePicker[0].style.setProperty(`::before {content: ${event.target.dataset.value} }`)
         });
       });
     }
