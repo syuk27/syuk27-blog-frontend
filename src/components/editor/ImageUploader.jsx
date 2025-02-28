@@ -1,9 +1,7 @@
-import axios from "axios";
 import { ImagePlus } from "lucide-react";
-import { useState } from "react";
 import {
-  uploadImageToCloudinary,
   getCloudinarySignature,
+  uploadImageToCloudinary,
 } from "../../api/cloudinary/cloudinary";
 
 const ImageUploader = ({ onImageUpload, id }) => {
@@ -65,4 +63,5 @@ const handleImageUpload = async (formData) => {
   }
 };
 
-export { ImageUploader, cloudinaryUpload, handleImageUpload };
+export { cloudinaryUpload, handleImageUpload, ImageUploader };
+
