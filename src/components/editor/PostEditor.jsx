@@ -54,7 +54,7 @@ const PostEditor = () => {
 
   // ✍️ 게시글 내용 변경
   const handleChange = (id, value) => {
-    console.log("text", value)
+    console.log("text", value);
     setPosts((prev) =>
       prev.map((post) => (post.id === id ? { ...post, content: value } : post))
     );
@@ -75,7 +75,21 @@ const PostEditor = () => {
     if (active.id !== over.id) {
       const oldIndex = posts.findIndex((item) => item.id === active.id);
       const newIndex = posts.findIndex((item) => item.id === over.id);
-      setPosts(arrayMove(posts, oldIndex, newIndex));
+
+      console.log("oldIndex", oldIndex, newIndex);
+
+      let beforeOrder = newIndex;
+      let afterOrder = oldIndex;
+
+      setPosts(
+        arrayMove(posts, oldIndex, newIndex).map((post) => {
+          return post.id === active.id
+            ? { ...post, blockOrder: ++beforeOrder }
+            : post.id === over.id
+            ? { ...post, blockOrder: ++afterOrder }
+            : post;
+        })
+      );
     }
   };
 

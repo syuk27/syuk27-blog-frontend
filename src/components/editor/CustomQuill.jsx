@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import ReactQuill, { Quill } from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import ReactQuill, { Quill } from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 
 const fontSize = [
   "16px",
@@ -22,12 +22,12 @@ const modules = {
   toolbar: [
     [{ font: [] }],
     [{ size: Size.whitelist }], // 폰트 크기 옵션 추가
+    [{ header: "1" }, { header: "2" }, { header: "3" }],
+    [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
+    [{ align: [] }],
     ["bold", "italic", "underline", "strike"],
     [{ color: [] }, { background: [] }],
     [{ script: "sub" }, { script: "super" }],
-    [{ header: "1" }, { header: "2" }, { header: "3" }],
-    [{ align: [] }],
-    ["blockquote", "code-block"],
   ],
 };
 
@@ -35,6 +35,8 @@ const formats = [
   "font",
   "size",
   "header",
+  "list",
+  "align",
   "bold",
   "italic",
   "underline",
@@ -42,15 +44,13 @@ const formats = [
   "color",
   "background",
   "script",
-  "align",
-  "blockquote",
-  "code-block",
 ];
 
 const CustomQuill = ({
   className,
   value,
   onChangeHandle,
+  onPointerDown,
   placeholder,
   count,
 }) => {
@@ -90,15 +90,15 @@ const CustomQuill = ({
   }, [pickerfontSize]);
 
   return (
-    <div className={className}>
+    <div className={className} onPointerDown={onPointerDown}>
       <ReactQuill
-        // style={}
         value={value}
         onChange={(value) => onChangeHandle(value)}
         placeholder={placeholder}
         modules={modules}
         formats={formats}
         ref={quillRef}
+        tabIndex={0}
       />
     </div>
   );

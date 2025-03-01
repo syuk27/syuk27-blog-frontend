@@ -36,7 +36,6 @@ const SortableItem = ({
       {...listeners}
       className="p-4 border rounded-md bg-white shadow-md cursor-grab flex flex-col gap-4"
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      onPointerDown={handleButtonClick}
     >
       {/* 이미지 업로드 버튼 */}
       <ImageUploader onImageUpload={onImageUpload} id={id} />
@@ -57,6 +56,7 @@ const SortableItem = ({
         className={`w-full p-2 border rounded-md resize-none ${post.fontSize}`}
         value={post.content || ""}
         onChangeHandle={onChangeHandle}
+        onPointerDown={handleButtonClick}
         placeholder="여기에 글을 입력하세요..."
         count={post.blockOrder}
       />
@@ -65,6 +65,7 @@ const SortableItem = ({
       <button
         onClick={() => onDelete(id)}
         className="text-red-500 flex items-center gap-2"
+        onPointerDown={handleButtonClick}
       >
         <Trash2 size={20} />
         <span>삭제</span>
