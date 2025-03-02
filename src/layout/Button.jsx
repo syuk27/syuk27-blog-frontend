@@ -1,7 +1,10 @@
-export default function Button({children, clickFnc}) {
-    
+export default function Button({children, onClick, isDisabled, className}) {
+  if(!className) {
+    className = "btn btn-success";
+  } 
+  
   return (
-    <button className="btn btn-success" type="submit" onClick={clickFnc}>
+    <button className={className} type="submit" onClick={onClick} disabled={isDisabled}>
       {children}
     </button>
   );

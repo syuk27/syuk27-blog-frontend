@@ -15,7 +15,7 @@ export default function Navbar() {
 
     <nav className="navbar navbar-light bg-light px-4">
       <Link className="navbar-brand" to="/">
-        syuk27-blog
+        syuk27Blog
       </Link>
       <div>
         <Link

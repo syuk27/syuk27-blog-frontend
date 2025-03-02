@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getUserPosts } from "../api/userpost/userpost";
+import Pagination from "../components/Pagination";
 
 const features = [
   {
@@ -83,26 +84,51 @@ const features = [
 ];
 
 const BlogPosts = () => {
+  const [page, setPage] = useState(1);
+  const [Totalpages, setTotalPages] = useState(1);
   const [contents, setContents] = useState([]);
+  const [test, setTest] = useState([]);
 
   useEffect(() => {
-    getUserPosts(1).then((response) => {
+    getUserPosts(1, page).then((response) => {
       console.log("response", response);
       if (response.status === 200) {
-        setContents(response.data);
+        setTotalPages(response.data.totalPages);
+        setContents(response.data.content);
       }
     });
-  }, []);
+  }, [page]);
 
   useEffect(() => {
-    contents.map((content) => {
-      
-      if(content.userPostBlockList[0].cloudImg_url !== "") {
+    console.log("contents", contents);
+    setTest(
+      contents.map((content) => {
+        console.log("content", content);
+        const feature = content.userPostBlockList[0];
 
-      }
-      
+        let imageUrl = "";
+        if (feature.cloudImg_url !== "") {
+          imageUrl = feature.cloudImg_url;
+        }
 
-    });
+        return (
+          <div
+            key={content.id}
+            className="w-full lg:w-1/2 2xl:w-1/3 px-4 cursor-pointer"
+          >
+            <div className="h-full p-8 text-center hover:bg-white rounded-md hover:shadow-xl transition duration-200">
+              <div className="inline-flex h-80 w-[25rem] mb-6 mx-auto items-center justify-center text-white bg-green-500 rounded-lg">
+                <img src={imageUrl} />
+              </div>
+              <h3 className="mb-4 text-xl md:text-2xl leading-tight font-bold">
+                {feature.content}
+              </h3>
+              <p className="text-coolGray-500 font-medium">teest</p>
+            </div>
+          </div>
+        );
+      })
+    );
   }, [contents]);
 
   return (
@@ -117,21 +143,22 @@ const BlogPosts = () => {
         {/* Section Title */}
         <div className="md:max-w-4xl mb-12 mx-auto text-center">
           <span className="inline-block py-px px-2 mb-4 text-xs leading-5 text-green-500 bg-green-100 font-medium uppercase rounded-full shadow-sm">
-            Features
+            SYUK27BLOG
           </span>
           <h1 className="mb-4 text-3xl md:text-4xl leading-tight font-bold tracking-tighter">
-            Gain more insight into how people use your
+            SYUK27의 풀스택 개발 블로그
           </h1>
           <p className="text-lg md:text-xl text-coolGray-500 font-medium">
-            With our integrated CRM, project management, collaboration and
-            invoicing capabilities, you can manage every aspect of your business
-            in one secure platform.
+            React & Spring Boot로 개발한 블로그입니다.
+            <br />
+            풀스택 개발 전반의 기술과 경험을 포스팅합니다.
           </p>
         </div>
 
         {/* Feature Cards */}
         <div className="flex flex-wrap -mx-4">
-          {features.map((feature, index) => (
+          {test}
+          {/* {features.map((feature, index) => (
             <div key={index} className="w-full md:w-1/2 lg:w-1/3 px-4">
               <div className="h-full p-8 text-center hover:bg-white rounded-md hover:shadow-xl transition duration-200">
                 <div className="inline-flex h-16 w-16 mb-6 mx-auto items-center justify-center text-white bg-green-500 rounded-lg">
@@ -145,8 +172,9 @@ const BlogPosts = () => {
                 </p>
               </div>
             </div>
-          ))}
+          ))} */}
         </div>
+        <Pagination currentPage={page} totalPages={Totalpages} onPageChange={setPage} />
       </div>
     </section>
   );

@@ -14,7 +14,7 @@ export default function Search() {
             placeholder="Search"
             readOnly
           />
-          <Button clickFnc={clickHandler}>Search</Button>
+          <Button onClick={clickHandler}>Search</Button>
         </form>
       </div>
     );
