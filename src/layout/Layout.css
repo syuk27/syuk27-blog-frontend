@@ -2,10 +2,10 @@
   background-color: #e7e7e7;
 }
 
-.footer-absolute {
+.footer {
   text-align: center;
   margin-top: 60px;
-  position: absolute;
+  position: relative;
   bottom: 0;
   left: 0;
   width: 100%;
