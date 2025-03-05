@@ -1,7 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import AdminEditorPage from "../pages/AdminEditorPage";
 import BlogPosts from "../pages/BlogPosts";
-import Home from "../pages/HomePage";
 
 export default function AppRoutes() {
   return (

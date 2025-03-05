@@ -48,8 +48,7 @@ const formats = [
 
 const CustomQuill = ({
   className,
-  value,
-  onChangeHandle,
+  onChange,
   onPointerDown,
   placeholder,
   count,
@@ -89,11 +88,15 @@ const CustomQuill = ({
     document.head.appendChild(style);
   }, [pickerfontSize]);
 
+  const test = () => {
+    console.log("Test")
+  }
+
   return (
     <div className={className} onPointerDown={onPointerDown}>
       <ReactQuill
-        value={value}
-        onChange={(value) => onChangeHandle(value)}
+        onChange={(value) => onChange(value)}
+        onCompositionStart={test}
         placeholder={placeholder}
         modules={modules}
         formats={formats}
