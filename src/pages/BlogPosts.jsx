@@ -106,7 +106,7 @@ const BlogPosts = () => {
         console.log("content", content);
         const feature = content.userPostBlockList[0];
 
-        let imageUrl = "";
+        let imageUrl = "/non_image.svg";
         if (feature.cloudImg_url !== "") {
           imageUrl = feature.cloudImg_url;
         }
@@ -117,8 +117,8 @@ const BlogPosts = () => {
             className="w-full lg:w-1/2 2xl:w-1/3 px-4 cursor-pointer"
           >
             <div className="h-full p-8 text-center hover:bg-white rounded-md hover:shadow-xl transition duration-200">
-              <div className="inline-flex h-80 w-[25rem] mb-6 mx-auto items-center justify-center text-white bg-green-500 rounded-lg">
-                <img src={imageUrl} />
+              <div className="inline-flex h-80 w-[25rem] mb-6 mx-auto items-center justify-center text-white bg-green-100 rounded-lg">
+                <img src={imageUrl} className="h-72"/>
               </div>
               <h3 className="mb-4 text-xl md:text-2xl leading-tight font-bold">
                 {feature.content}

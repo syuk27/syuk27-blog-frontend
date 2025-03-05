@@ -14,7 +14,9 @@ const PostEditor = () => {
   const [posts, setPosts] = useState([]);
   const [userPostBlockList, setUserPostBlockList] = useState([]);
 
-  // 📝 새 블록 추가 (글 + 이미지 가능)
+  //📝 🗑️ 📸 ✍️ 🔤 🔄
+
+  // 새 블록 추가 (글 + 이미지 가능)
   const addPost = () => {
     setPosts((prevPosts) => [
       ...prevPosts,
@@ -22,7 +24,6 @@ const PostEditor = () => {
         id: uuidv4(),
         content: "",
         image: null,
-        fontSize: "text-base",
         blockOrder: ++prevPosts.length,
       },
     ]);
@@ -30,7 +31,7 @@ const PostEditor = () => {
     console.log("posts", posts);
   };
 
-  // 📸 이미지 추가
+  // 이미지 추가
   const addImage = async (e, id) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -52,7 +53,7 @@ const PostEditor = () => {
     }
   };
 
-  // ✍️ 게시글 내용 변경
+  // 게시글 내용 변경
   const handleChange = (id, value) => {
     console.log("text", value);
     setPosts((prev) =>
@@ -60,16 +61,7 @@ const PostEditor = () => {
     );
   };
 
-  // 🔤 글자 크기 변경
-  const changeFontSize = (id, newSize) => {
-    setPosts((prev) =>
-      prev.map((post) =>
-        post.id === id ? { ...post, fontSize: newSize } : post
-      )
-    );
-  };
-
-  // 🔄 드래그 후 순서 변경
+  // 드래그 후 순서 변경
   const handleDragEnd = (event) => {
     const { active, over } = event;
     if (active.id !== over.id) {
@@ -93,7 +85,7 @@ const PostEditor = () => {
     }
   };
 
-  // 🗑️ 게시글 삭제
+  // 게시글 삭제
   const deletePost = (id) => {
     setPosts(posts.filter((post) => post.id !== id));
   };
@@ -162,9 +154,25 @@ const PostEditor = () => {
       {/* 드래그 정렬 가능한 게시글 리스트 */}
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={posts} strategy={verticalListSortingStrategy}>
-          <div className="space-y-2">
+          <div className="space-y-2 container">
+            <div className="space-y-2">
+              <label className="text-lg">📝 포스트 제목</label>
+              <input
+                type="text"
+                placeholder="제목을 입력해 주세요."
+                className="w-full px-4 py-3 text-base font-semibold border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+              />
+
+              <label className="text-lg">📝 포스트 설명</label>
+              <textarea
+                placeholder="설명"
+                className="w-full px-4 py-3 text-base font-semibold border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+              />
+            </div>
             {posts.length === 0 ? (
-              <p className="text-gray-500">✏️ 글을 추가하세요!</p>
+              <p className="text-gray-500 text-base font-semibold">
+                ✏️ 글을 추가하세요!
+              </p>
             ) : (
               posts.map((post) => (
                 <SortableItem
@@ -174,7 +182,6 @@ const PostEditor = () => {
                   onChange={handleChange}
                   onDelete={deletePost}
                   onImageUpload={addImage}
-                  onFontSizeChange={changeFontSize}
                 />
               ))
             )}

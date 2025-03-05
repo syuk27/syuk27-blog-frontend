@@ -2,11 +2,11 @@ import { apiClient } from "../common";
 
 
 const createUserPost = (userPost) => {
-    return apiClient.post("/user_posts", userPost);
+    return apiClient.post("/user/posts", userPost);
 }
 
 const getUserPosts = (id, page) => {
-    return apiClient.get(`/user_posts/${id}/${page}`);
+    return apiClient.get(`/user/posts/${id}/${page}`);
 }
 
 export {
