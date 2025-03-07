@@ -3,15 +3,8 @@ import { CSS } from "@dnd-kit/utilities";
 import { Trash2 } from "lucide-react";
 import CustomQuill from "./CustomQuill";
 import { ImageUploader } from "./ImageUploader";
-import { useEffect } from "react";
 
-const SortableItem = ({
-  id,
-  post,
-  onChange,
-  onDelete,
-  onImageUpload,
-}) => {
+const SortableItem = ({ id, post, onChange, onDelete, onImageUpload, quillRef }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
 
@@ -59,6 +52,7 @@ const SortableItem = ({
         onPointerDown={handleButtonClick}
         placeholder="여기에 글을 입력하세요..."
         count={post.blockOrder}
+        ref={quillRef}
       />
 
       {/* 삭제 버튼 */}

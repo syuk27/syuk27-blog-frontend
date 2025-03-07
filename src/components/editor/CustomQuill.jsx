@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { forwardRef, useEffect, useRef, useState } from "react";
 import ReactQuill, { Quill } from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 
@@ -46,20 +46,19 @@ const formats = [
   "script",
 ];
 
-const CustomQuill = ({
-  className,
-  onChange,
-  onPointerDown,
-  placeholder,
-  count,
-}) => {
+const CustomQuill = forwardRef((props, ref) => {
+  const { className, onChange, onPointerDown, placeholder, count } = props;
+
   if (!count) count = 1;
 
-  const quillRef = useRef(null);
+  const quillRef = ref;
   const [pickerfontSize, setPickerFontSize] = useState("16px");
   const sizePickerId = "sizePicker_" + count;
 
   useEffect(() => {
+    console.log("ref", ref)
+    quillRef.current.focus();
+
     if (quillRef.current) {
       const quillContainer = quillRef.current.getEditor().container;
 
@@ -88,15 +87,10 @@ const CustomQuill = ({
     document.head.appendChild(style);
   }, [pickerfontSize]);
 
-  const test = () => {
-    console.log("Test")
-  }
-
   return (
     <div className={className} onPointerDown={onPointerDown}>
       <ReactQuill
         onChange={(value) => onChange(value)}
-        onCompositionStart={test}
         placeholder={placeholder}
         modules={modules}
         formats={formats}
@@ -105,6 +99,6 @@ const CustomQuill = ({
       />
     </div>
   );
-};
+});
 
 export default CustomQuill;

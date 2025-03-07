@@ -32,10 +32,10 @@ export default function Navbar() {
         </Link>
       </div>
       <div className="flex">
-        <Link to="/" className="text-dark me-3.5 text-decoration-none">
+        <Link to="/sign_in" className="text-dark me-3.5 text-decoration-none">
           <FaSignInAlt className="me-1" /> Sign in
         </Link>
-        <Link to="/" className="text-dark text-decoration-none">
+        <Link to="/sign_up" className="text-dark text-decoration-none">
           <FaUserPlus className="me-1" /> Sign up
         </Link>
       </div>
