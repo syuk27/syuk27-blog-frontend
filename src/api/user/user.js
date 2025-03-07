@@ -1,11 +1,11 @@
 import { apiClient } from "../common";
 
-const excuteAuthenticate = (userEmail, password) => {
-  return apiClient.post("/authenticate", { userEmail, password });
+const excuteAuthenticate = ({email, password}) => {
+  return apiClient.post("/authenticate", { email, password });
 };
 
 const registerUser = (user) => {
-  return apiClient.post("/auth/authenticate", user);
+  return apiClient.post("/auth/register", user);
 };
 
 const changePassword = (user) => {
@@ -15,3 +15,8 @@ const changePassword = (user) => {
 const deleteUser = (user) => {
     return apiClient.post("/auth/delete", user);
   };
+
+  export {
+    excuteAuthenticate,
+    registerUser,
+  }

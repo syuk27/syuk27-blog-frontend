@@ -1,13 +1,14 @@
 import { useState } from "react";
+import { registerUser } from "../../api/user/user";
 import Button from "../../layout/Button";
-import { passwordRegex, emailPattern } from "../../utils/validation";
 import Validation from "../../layout/Validation";
+import { emailRegex, passwordRegex } from "../../utils/validation";
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
-    name: "",
+    nickname: "",
     email: "",
-    pwd: "",
+    password: "",
   });
 
   const handleChange = (e) => {
@@ -15,7 +16,20 @@ const SignupPage = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = () => {};
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    registerUser(formData)
+      .then((response) => {
+        console.log("response", response);
+        if(response.ok) {
+
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+        alert(error);
+      });
+  };
 
   const errors = {};
 
@@ -27,13 +41,12 @@ const SignupPage = () => {
       >
         <div className="mb-4">
           <label htmlFor="name" className="block text-gray-700 font-bold">
-            Nickname:
+            ✅Nickname:
           </label>
           <input
             type="text"
-            name="name"
-            id="name"
-            value={formData.name}
+            name="nickname"
+            value={formData.nickname}
             onChange={handleChange}
             required
             className="w-full p-2 border border-gray-300 rounded mt-1"
@@ -47,13 +60,12 @@ const SignupPage = () => {
           <input
             type="email"
             name="email"
-            id="email"
             value={formData.email}
             onChange={handleChange}
             required
             className="w-full p-2 border border-gray-300 rounded mt-1"
           />
-          <Validation value={formData.email} patten={emailPattern}>
+          <Validation value={formData.email} patten={emailRegex}>
             Invalid email format
           </Validation>
         </div>
@@ -64,14 +76,13 @@ const SignupPage = () => {
           </label>
           <input
             type="password"
-            name="pwd"
-            id="pwd"
-            value={formData.pwd}
+            name="password"
+            value={formData.password}
             onChange={handleChange}
             required
             className="w-full p-2 border border-gray-300 rounded mt-1"
           />
-          <Validation value={formData.pwd} patten={passwordRegex}>
+          <Validation value={formData.password} patten={passwordRegex}>
             Invalid password format
           </Validation>
         </div>

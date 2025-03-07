@@ -4,7 +4,7 @@ import Button from "../../layout/Button";
 const SignInPage = () => {
   const [formData, setFormData] = useState({
     email: "",
-    pwd: "",
+    password: "",
   });
 
   const handleChange = (e) => {
@@ -29,7 +29,6 @@ const SignInPage = () => {
         <input
           type="email"
           name="email"
-          id="email"
           value={formData.email}
           onChange={handleChange}
           required
@@ -43,9 +42,8 @@ const SignInPage = () => {
         </label>
         <input
           type="password"
-          name="pwd"
-          id="pwd"
-          value={formData.pwd}
+          name="password"
+          value={formData.password}
           onChange={handleChange}
           required
           className="w-full p-2 border border-gray-300 rounded mt-1"
