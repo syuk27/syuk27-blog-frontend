@@ -47,7 +47,7 @@ const formats = [
 ];
 
 const CustomQuill = forwardRef((props, ref) => {
-  const { className, onChange, onPointerDown, placeholder, count } = props;
+  let { className, onChange, onPointerDown, placeholder, count } = props;
 
   if (!count) count = 1;
 
