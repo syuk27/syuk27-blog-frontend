@@ -1,10 +1,15 @@
-import { useState } from "react";
-import { registerUser } from "../../api/user/user";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Button from "../../layout/Button";
 import Validation from "../../layout/Validation";
+import { registerUser } from "../../store/userSlice";
 import { emailRegex, passwordRegex } from "../../utils/validation";
 
 const SignupPage = () => {
+
+  const dispatch = useDispatch();
+  const { status, loading, error } = useSelector((state) => state.user);
+
   const [formData, setFormData] = useState({
     nickname: "",
     email: "",
@@ -16,20 +21,18 @@ const SignupPage = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    registerUser(formData)
-      .then((response) => {
-        console.log("response", response);
-        if(response.ok) {
 
-        }
-      })
-      .catch((error) => {
-        console.log(error)
-        alert(error);
-      });
+    const response = await dispatch(registerUser(formData));
+    console.log("response", response);
+  
   };
+
+  useEffect(() => {
+    console.log("loading", loading);
+    console.log("status", status);
+  }, [status, loading])
 
   const errors = {};
 

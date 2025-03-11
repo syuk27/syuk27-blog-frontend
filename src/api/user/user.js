@@ -1,22 +1,19 @@
 import { apiClient } from "../common";
 
-const excuteAuthenticate = ({email, password}) => {
-  return apiClient.post("/authenticate", { email, password });
+const createUser = (user) => {
+  return apiClient.post("/user/create", user);
 };
 
-const registerUser = (user) => {
-  return apiClient.post("/auth/register", user);
+const getUser = () => {
+  return apiClient.get("/user/get");
 };
 
-const changePassword = (user) => {
-  return apiClient.post("/auth/change_password", user);
+const udpatePassword = (user) => {
+  return apiClient.post("/user/change_password", user);
 };
 
 const deleteUser = (user) => {
-    return apiClient.post("/auth/delete", user);
-  };
+  return apiClient.post("/user/delete", user);
+};
 
-  export {
-    excuteAuthenticate,
-    registerUser,
-  }
+export { createUser, getUser };

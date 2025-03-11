@@ -2,6 +2,8 @@ import { useState } from "react";
 import Button from "../../layout/Button";
 
 const SignInPage = () => {
+
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -15,6 +17,8 @@ const SignInPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Login Submitted", formData);
+
+  
   };
 
   return (
