@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import Button from "../../layout/Button";
 import Validation from "../../layout/Validation";
-import { registerUser } from "../../store/userSlice";
+import { registerUser, resetUser } from "../../store/userSlice";
 import { emailRegex, passwordRegex } from "../../utils/validation";
 
 const SignupPage = () => {
-
   const dispatch = useDispatch();
-  const { status, loading, error } = useSelector((state) => state.user);
+  const { loading, status, error } = useSelector((state) => state.user);
+  const naviage = useNavigate();
 
   const [formData, setFormData] = useState({
     nickname: "",
@@ -21,20 +22,33 @@ const SignupPage = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    const response = await dispatch(registerUser(formData));
-    console.log("response", response);
-  
+    dispatch(registerUser(formData));
   };
 
   useEffect(() => {
     console.log("loading", loading);
     console.log("status", status);
-  }, [status, loading])
 
-  const errors = {};
+    if (status === 200) {
+      alert("등록 되었습니다.");
+      naviage("/");
+      dispatch(resetUser());
+    }
+
+    if (status !== 200 && error) {
+      if (error.message) {
+        alert(error.message);
+      }
+
+      if (!error.message) {
+        alert("잘못된 요청입니다.");
+      }
+
+      console.log("error", error);
+    }
+  }, [loading, status, error]);
 
   return (
     <>
@@ -89,7 +103,6 @@ const SignupPage = () => {
             Invalid password format
           </Validation>
         </div>
-
         <div className="text-right">
           <Button type="submit">Create account</Button>
         </div>

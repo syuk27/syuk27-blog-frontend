@@ -4,12 +4,21 @@ import { excuteAuthenticate, expiresAuthenticate } from "../api/user/auth";
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    status: null,
-    isAuthenticated: false,
     loading: false,
+    isAuthenticated: false,
+    status: null,
     error: null,
   }, // 초기상태 반드시 추가
-  reducers: {}, // 비동기 처리 불가 -> extraReducers 가능
+  reducers: {
+    resetAuth: (state) => {
+      state.loading = null;
+      state.status = null;
+      state.error = null;
+    },
+    setAuthenticated: (state, action) => {
+      state.isAuthenticated = action.payload;
+    },
+  }, // 비동기 처리 불가 -> extraReducers 가능
   extraReducers: (builder) => {
     builder
 
@@ -54,9 +63,11 @@ export const login = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await excuteAuthenticate(credentials);
+      console.log("login response", response);
       return response.status;
     } catch (error) {
-      rejectWithValue(error.response.data);
+      console.log("login error", error);
+      return rejectWithValue(error.response?.data);
     }
   }
 );
@@ -67,3 +78,5 @@ export const logout = createAsyncThunk("authenticate/logout", async () => {
 });
 
 export default authSlice.reducer;
+
+export const { resetAuth, setAuthenticated } = authSlice.actions;
