@@ -1,15 +1,22 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { createUser, getUser } from "../api/user/user";
+import { setAuthenticated } from "./authSlice";
 
 const userSlice = createSlice({
   name: "user",
   initialState: {
+    loading: false,
     status: null,
     user: null,
-    loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    resetUser: (state) => {
+      (state.loading = false), (state.status = null);
+      state.error = null;
+      state.user = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
 
@@ -34,6 +41,7 @@ const userSlice = createSlice({
       .addMatcher(
         (action) => action.type.endsWith("/rejected"),
         (state, action) => {
+          console.log("userSlice/rejected", state, action);
           state.loading = false;
           state.error = action.payload;
         }
@@ -46,24 +54,30 @@ export const registerUser = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const response = await createUser(userData);
-      console.log("registerUser", response)
+      console.log("registerUser", response);
       return response.status;
     } catch (error) {
-      rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data);
     }
   }
 );
 
 export const fetchUser = createAsyncThunk(
   "user/fetch",
-  async (_, { rejectWithValue }) => {
+  async (_, { dispatch, rejectWithValue }) => {
     try {
       const response = await getUser();
+      console.log("fetchUser", response);
+      dispatch(setAuthenticated(true));
       return response.data;
     } catch (error) {
-      rejectWithValue(error.response.data);
+      console.log("fetchUser error", error);
+      dispatch(setAuthenticated(false));
+      return rejectWithValue(error.response?.data);
     }
   }
 );
 
 export default userSlice.reducer;
+
+export const { resetUser } = userSlice.actions;
