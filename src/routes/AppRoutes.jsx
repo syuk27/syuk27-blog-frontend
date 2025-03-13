@@ -4,6 +4,7 @@ import SignInPage from "../pages/SignPage/SignInPage";
 import SignupPage from "../pages/SignPage/SignupPage";
 import BlogPostsPage from "../pages/postPage/BlogPostsPage";
 import AdminEditorPage from "../pages/postPage/AdminEditorPage";
+import SignOutPage from "../pages/SignPage/SignOutPage";
 
 export default function AppRoutes() {
   return (
@@ -14,6 +15,7 @@ export default function AppRoutes() {
         <Route path="/blog_posts" element={<BlogPostsPage />} />
         <Route path="/sign_in" element={<SignInPage />} />
         <Route path="/sign_up" element={<SignupPage />} />
+        <Route path="/sign_out" element={<SignOutPage />} />
       </Route>
     </Routes>
   );

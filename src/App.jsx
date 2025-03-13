@@ -11,7 +11,6 @@ import { fetchUser } from "./store/userSlice";
 function App() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
-
   const [loginUser, setLoginUser] = useState("");
 
   useEffect(() => {

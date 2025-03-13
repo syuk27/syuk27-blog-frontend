@@ -100,7 +100,7 @@ const PostEditor = () => {
 
   // 모든 블록 저장
   const allBlockSave = async () => {
-    console.log("ref", quillRef.current.value)
+    // console.log("ref", quillRef.current.value)
     let isReady = true;
     const updatedPosts = await Promise.all(
       posts.map(async (post) => {
