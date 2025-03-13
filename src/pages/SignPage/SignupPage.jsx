@@ -33,8 +33,8 @@ const SignupPage = () => {
 
     if (status === 200) {
       alert("등록 되었습니다.");
-      naviage("/");
       dispatch(resetUser());
+      naviage("/");
     }
 
     if (status !== 200 && error) {

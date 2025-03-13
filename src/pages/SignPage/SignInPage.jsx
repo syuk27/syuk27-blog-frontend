@@ -3,6 +3,7 @@ import Button from "../../layout/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login, resetAuth } from "../../store/authSlice";
+import { fetchUser } from "../../store/userSlice";
 
 const SignInPage = () => {
   const dispatch = useDispatch();
@@ -27,11 +28,12 @@ const SignInPage = () => {
   };
 
   useEffect(() => {
-    console.log("isAuthenticated", isAuthenticated, status)
+    console.log("isAuthenticated", isAuthenticated, status);
     if (isAuthenticated && status === 200) {
       alert("로그인 되었습니다.");
-      naviage("/");
       dispatch(resetAuth());
+      dispatch(fetchUser());
+      naviage("/");
     }
 
     if (!isAuthenticated && error) {

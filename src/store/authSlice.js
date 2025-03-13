@@ -29,7 +29,7 @@ const authSlice = createSlice({
         state.status = action.payload; // createAsyncThunk에서 return 한 값
       })
 
-      .addCase(logout.fulfilled, (state) => {
+      .addCase(logout.fulfilled, (state, action) => {
         state.loading = false;
         state.isAuthenticated = false;
         state.status = action.payload;
@@ -74,6 +74,7 @@ export const login = createAsyncThunk(
 
 export const logout = createAsyncThunk("authenticate/logout", async () => {
   const response = await expiresAuthenticate();
+  console.log("logout", response)
   return response.status;
 });
 
