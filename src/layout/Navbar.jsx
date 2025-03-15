@@ -1,12 +1,14 @@
-import { Link, useNavigate } from "react-router-dom";
-import "./Layout.css";
-import { useState } from "react";
 import { FaSignInAlt, FaUserPlus } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import "./Layout.css";
+import { useEffect } from "react";
 
 export default function Navbar({user}) {
   console.log("nav", user);
-  const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate(); // React Router 네비게이션
+
+  useEffect(() => {
+
+  }, [user])
 
   return (
 
@@ -28,7 +30,7 @@ export default function Navbar({user}) {
           admin_editor
         </Link>
       </div>
-      <div className="flex">
+      <div className="[display:ruby]">
         {user === null && (
           <>
           <Link to="/sign_in" className="text-dark me-3.5 text-decoration-none">
@@ -42,7 +44,7 @@ export default function Navbar({user}) {
         {user !== null && (
           <>
           <Link to="/" className="text-dark me-3.5 text-decoration-none">
-            login : {user.nickname}
+            login : {user.nickname} {user.role}
           </Link>
           <Link to="/sign_out" className="text-dark text-decoration-none">
             <FaSignInAlt className="me-1" /> Sign out

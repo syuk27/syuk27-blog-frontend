@@ -7,10 +7,11 @@ import Footer from "./layout/Footer";
 import Navbar from "./layout/Navbar";
 import AppRoutes from "./routes/AppRoutes";
 import { fetchUser } from "./store/userSlice";
+import useLoginUser from "./hooks/user/useLoginUser";
 
 function App() {
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.user);
+  const { user } = useLoginUser();
   const [loginUser, setLoginUser] = useState("");
 
   useEffect(() => {

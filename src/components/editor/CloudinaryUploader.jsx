@@ -4,7 +4,7 @@ import {
   uploadImageToCloudinary,
 } from "../../api/cloudinary/cloudinary";
 
-const ImageUploader = ({ onImageUpload, id }) => {
+const CloudinaryUploader = ({ onImageUpload, id }) => {
   return (
     // 이미지 업로드 버튼
     <label className="cursor-pointer flex items-center gap-2 text-blue-500">
@@ -20,7 +20,7 @@ const ImageUploader = ({ onImageUpload, id }) => {
   );
 };
 
-const cloudinaryUpload = async (imageFile) => {
+const cloudinarySignature = async (imageFile) => {
   // const [imageUrl, setImageUrl] = useState("");
 
   const formData = new FormData();
@@ -46,11 +46,11 @@ const cloudinaryUpload = async (imageFile) => {
   }
 };
 
-const handleImageUpload = async (formData) => {
+const handleCloudinaryUpload = async (formData) => {
   try {
     if (formData instanceof FormData && formData.has("cloudName")) {
       const response = await uploadImageToCloudinary(formData);
-      console.log("handleImageUpload", response);
+      console.log("handleCloudinaryUpload", response);
       if (response.status === 200) {
         return response.data.secure_url;
       }
@@ -58,10 +58,10 @@ const handleImageUpload = async (formData) => {
 
     return "";
   } catch (error) {
-    console.log("handleImageUpload error", error);
+    console.log("handleCloudinaryUpload error", error);
     return "error";
   }
 };
 
-export { cloudinaryUpload, handleImageUpload, ImageUploader };
+export { CloudinaryUploader, cloudinarySignature, handleCloudinaryUpload };
 
