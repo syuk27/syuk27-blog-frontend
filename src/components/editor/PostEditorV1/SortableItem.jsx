@@ -1,10 +1,10 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Trash2 } from "lucide-react";
-import CustomQuill from "./CustomQuill";
-import { ImageUploader } from "./ImageUploader";
+import CustomQuill from "../CustomQuill";
+import { CloudinaryUploader } from "../CloudinaryUploader";
 
-const SortableItem = ({ id, post, onChange, onDelete, onImageUpload, quillRef }) => {
+const SortableItem = ({ id, post, onDelete, onImageUpload, quillRef }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
 
@@ -12,14 +12,6 @@ const SortableItem = ({ id, post, onChange, onDelete, onImageUpload, quillRef })
   const handleButtonClick = (event) => {
     event.stopPropagation(); // 버튼 클릭이 드래그를 방해하지 않도록 설정
   };
-
-  const onChangeHandle = (event) => {
-    onChange(id, event);
-  };
-
-  // const customAttributes = {
-  //   ...attributes, tabIndex : post.blockOrder
-  // }
 
   return (
     <div
@@ -30,7 +22,7 @@ const SortableItem = ({ id, post, onChange, onDelete, onImageUpload, quillRef })
       style={{ transform: CSS.Transform.toString(transform), transition }}
     >
       {/* 이미지 업로드 버튼 */}
-      <ImageUploader onImageUpload={onImageUpload} id={id} />
+      <CloudinaryUploader onImageUpload={onImageUpload} id={id} />
 
       {/* 이미지 미리보기 */}
       {post.image && (
@@ -48,7 +40,6 @@ const SortableItem = ({ id, post, onChange, onDelete, onImageUpload, quillRef })
       {/* 글 입력 */}
       <CustomQuill
         className={`w-full p-2 border rounded-md resize-none font-semibold text-lg`}
-        onChange={onChangeHandle}
         onPointerDown={handleButtonClick}
         placeholder="여기에 글을 입력하세요..."
         count={post.blockOrder}

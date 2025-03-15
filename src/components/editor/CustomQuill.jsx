@@ -47,20 +47,20 @@ const formats = [
 ];
 
 const CustomQuill = forwardRef((props, ref) => {
-  let { className, onChange, onPointerDown, placeholder, count } = props;
+  let { className, onPointerDown, placeholder, count } = props;
 
   if (!count) count = 1;
 
-  const quillRef = ref;
+  // const quillRef = ref;
   const [pickerfontSize, setPickerFontSize] = useState("16px");
   const sizePickerId = "sizePicker_" + count;
 
   useEffect(() => {
-    console.log("ref", ref)
-    quillRef.current.focus();
+    console.log("CustomQuill ref", ref)
+    ref.current.focus();
 
-    if (quillRef.current) {
-      const quillContainer = quillRef.current.getEditor().container;
+    if (ref.current) {
+      const quillContainer = ref.current.getEditor().container;
 
       const sizePicker = quillContainer?.parentElement.querySelector(
         ".ql-toolbar .ql-size.ql-picker .ql-picker-label"
@@ -90,11 +90,10 @@ const CustomQuill = forwardRef((props, ref) => {
   return (
     <div className={className} onPointerDown={onPointerDown}>
       <ReactQuill
-        onChange={(value) => onChange(value)}
         placeholder={placeholder}
         modules={modules}
         formats={formats}
-        ref={quillRef}
+        ref={ref}
         tabIndex={0}
       />
     </div>

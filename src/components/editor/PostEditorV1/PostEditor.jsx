@@ -5,18 +5,25 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { createAdminPost } from "../../api/posts/post";
-import { cloudinaryUpload, handleImageUpload } from "./ImageUploader";
+import { createAdminPost } from "../../../api/posts/post";
+import { cloudinarySignature, handleCloudinaryUpload } from "../CloudinaryUploader";
 import SortableItem from "./SortableItem";
+import useLoginUser from "../../../hooks/user/useLoginUser";
 
+//dnd-kit, cloudinary 사용 
 const PostEditor = () => {
+  const { user } = useLoginUser();
+
   const [posts, setPosts] = useState([]);
   const [postBlockList, setPostBlockList] = useState([]);
 
   const titleRef = useRef(null);
   const descriptionRef = useRef(null);
   const quillRef = useRef(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     titleRef.current.focus(); // 컴포넌트가 마운트되면 자동으로 포커스
@@ -48,7 +55,7 @@ const PostEditor = () => {
       /* 클라우드너리 테스트 */
       let signatureFormData = new FormData();
       if (file) {
-        signatureFormData = await cloudinaryUpload(file);
+        signatureFormData = await cloudinarySignature(file);
       }
 
       setPosts((prev) =>
@@ -61,22 +68,12 @@ const PostEditor = () => {
     }
   };
 
-  // 게시글 내용 변경
-  const handleChange = (id, value) => {
-    console.log("text", value);
-    // setPosts((prev) =>
-    //   prev.map((post) => (post.id === id ? { ...post, content: value } : post))
-    // );
-  };
-
   // 드래그 후 순서 변경
   const handleDragEnd = (event) => {
     const { active, over } = event;
     if (active.id !== over.id) {
       const oldIndex = posts.findIndex((item) => item.id === active.id);
       const newIndex = posts.findIndex((item) => item.id === over.id);
-
-      console.log("oldIndex", oldIndex, newIndex);
 
       let beforeOrder = newIndex;
       let afterOrder = oldIndex;
@@ -100,11 +97,11 @@ const PostEditor = () => {
 
   // 모든 블록 저장
   const allBlockSave = async () => {
-    // console.log("ref", quillRef.current.value)
+    console.log("allBlockSave ref", quillRef);
     let isReady = true;
     const updatedPosts = await Promise.all(
       posts.map(async (post) => {
-        const response = await handleImageUpload(post.formData);
+        const response = await handleCloudinaryUpload(post.formData);
         if (response === "error") {
           isReady = false;
         }
@@ -112,6 +109,7 @@ const PostEditor = () => {
         return {
           ...post,
           cloudImg_url: response,
+          content: quillRef.current.value,
           id: "",
         };
       })
@@ -120,30 +118,32 @@ const PostEditor = () => {
     if (isReady) {
       setPostBlockList(updatedPosts);
     }
-    console.log("updatedPosts", updatedPosts);
   };
 
   useEffect(() => {
-    let updatePost = {
-      user: {
-        id: 1,
-      },
-      title : titleRef.current.value,
-      description : descriptionRef.current.value,
-    };
+    if (user) {
+      let updatePost = {
+        user: {
+          id: user.id,
+        },
+        title: titleRef.current.value,
+        description: descriptionRef.current.value,
+      };
 
-    console.log("postBlockList", postBlockList);
-    if (postBlockList.length > 0) {
-      updatePost.postBlockList = postBlockList;
-      console.log("updatePost", updatePost);
-
-      createAdminPost(updatePost)
-        .then((response) => {
-          console.log("response", response);
-        })
-        .catch((error) => {
-          console.log("error", error);
-        });
+      if (postBlockList.length > 0) {
+        updatePost.postBlockList = postBlockList;
+        createAdminPost(updatePost)
+          .then((response) => {
+            if(response.status === 200) {
+              alert("저장 되었습니다.");
+              navigate("/");
+            }
+            console.log("response", response);
+          })
+          .catch((error) => {
+            console.log("error", error);
+          });
+      }
     }
   }, [postBlockList]);
 
@@ -193,7 +193,6 @@ const PostEditor = () => {
                   key={post.id}
                   id={post.id}
                   post={post}
-                  onChange={handleChange}
                   onDelete={deletePost}
                   onImageUpload={addImage}
                   quillRef={quillRef}
