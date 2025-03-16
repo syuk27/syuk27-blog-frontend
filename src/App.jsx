@@ -19,8 +19,9 @@ function App() {
   }, [dispatch]);
 
   useEffect(() => {
-    console.log("user", user);
-    setLoginUser(user);
+    if (user) {
+      setLoginUser(user);
+    }
   }, [user]);
 
   return (

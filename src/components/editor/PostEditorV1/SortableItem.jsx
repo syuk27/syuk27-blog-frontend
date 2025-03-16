@@ -4,10 +4,10 @@ import { Trash2 } from "lucide-react";
 import CustomQuill from "../CustomQuill";
 import { CloudinaryUploader } from "../CloudinaryUploader";
 
-const SortableItem = ({ id, post, onDelete, onImageUpload, quillRef }) => {
+const SortableItem = ({ id, post, onDelete, onImageUpload, quillRefs }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
-
+  console.log("SortableItem ref", quillRefs)
   // 버튼 클릭 시 드래그 방지 (이벤트 전파 중지)
   const handleButtonClick = (event) => {
     event.stopPropagation(); // 버튼 클릭이 드래그를 방해하지 않도록 설정
@@ -43,7 +43,7 @@ const SortableItem = ({ id, post, onDelete, onImageUpload, quillRef }) => {
         onPointerDown={handleButtonClick}
         placeholder="여기에 글을 입력하세요..."
         count={post.blockOrder}
-        ref={quillRef}
+        ref={quillRefs}
       />
 
       {/* 삭제 버튼 */}

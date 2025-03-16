@@ -55,12 +55,13 @@ const CustomQuill = forwardRef((props, ref) => {
   const [pickerfontSize, setPickerFontSize] = useState("16px");
   const sizePickerId = "sizePicker_" + count;
 
+  const refCurrent = Array.isArray(ref) ? ref.current[count] : ref.current;
+  console.log("CustomQuill ref", ref);
   useEffect(() => {
-    console.log("CustomQuill ref", ref)
-    ref.current.focus();
+    refCurrent.focus();
 
-    if (ref.current) {
-      const quillContainer = ref.current.getEditor().container;
+    if (refCurrent) {
+      const quillContainer = refCurrent.getEditor().container;
 
       const sizePicker = quillContainer?.parentElement.querySelector(
         ".ql-toolbar .ql-size.ql-picker .ql-picker-label"
@@ -93,7 +94,7 @@ const CustomQuill = forwardRef((props, ref) => {
         placeholder={placeholder}
         modules={modules}
         formats={formats}
-        ref={ref}
+        ref={(el) => (ref.current[count] = el)}
         tabIndex={0}
       />
     </div>
