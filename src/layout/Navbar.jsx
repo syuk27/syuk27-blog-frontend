@@ -1,15 +1,10 @@
+import { memo } from "react";
 import { FaSignInAlt, FaUserPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import "./Layout.css";
-import { useEffect } from "react";
 
-export default function Navbar({user}) {
+const Navbar = memo(({user}) => {
   console.log("nav", user);
-
-  useEffect(() => {
-
-  }, [user])
-
   return (
 
     <nav className="navbar navbar-light bg-light px-4">
@@ -54,4 +49,6 @@ export default function Navbar({user}) {
       </div>
     </nav>
   );
-}
+});
+
+export default Navbar;

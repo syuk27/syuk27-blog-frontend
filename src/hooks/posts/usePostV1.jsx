@@ -24,21 +24,20 @@ const usePostV1 = (page) => {
       useEffect(() => {
         setFeatures(
           contents.map((content) => {
-            console.log("content", content);
             const data = content.postBlockList[0];
         
             let imageUrl = "/non_image.svg";
             if (data.cloudImg_url !== "") {
               imageUrl = data.cloudImg_url;
             }
-            return <PostContent content={content} imageUrl={imageUrl}/>
+            return <PostContent key={content.id} content={content} imageUrl={imageUrl}/>
           })
         );
     
         console.log("features", features)
       }, [contents]);
 
-      return {totalpages, contents, features}
+      return {totalpages, features}
 }
 
 export default usePostV1;

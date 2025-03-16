@@ -21,8 +21,9 @@ const PostEditor = () => {
 
   const titleRef = useRef(null);
   const descriptionRef = useRef(null);
-  const quillRef = useRef(null);
+  const quillRefs = useRef([]);
 
+  console.log("quillRefs", quillRefs)
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -97,10 +98,10 @@ const PostEditor = () => {
 
   // 모든 블록 저장
   const allBlockSave = async () => {
-    console.log("allBlockSave ref", quillRef);
+    console.log("allBlockSave ref", quillRefs);
     let isReady = true;
     const updatedPosts = await Promise.all(
-      posts.map(async (post) => {
+      posts.map(async (post, index) => {
         const response = await handleCloudinaryUpload(post.formData);
         if (response === "error") {
           isReady = false;
@@ -109,7 +110,7 @@ const PostEditor = () => {
         return {
           ...post,
           cloudImg_url: response,
-          content: quillRef.current.value,
+          content: quillRefs.current[index + 1].value,
           id: "",
         };
       })
@@ -195,7 +196,7 @@ const PostEditor = () => {
                   post={post}
                   onDelete={deletePost}
                   onImageUpload={addImage}
-                  quillRef={quillRef}
+                  quillRefs={quillRefs}
                 />
               ))
             )}

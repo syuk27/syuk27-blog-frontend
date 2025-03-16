@@ -1,10 +1,12 @@
+import usePostDetail from "../../../hooks/posts/usePostDetail";
 
 const PostContent = (props) => {
-  const { page, content, imageUrl, setTotalPages, setContents, setFeatures } = props;
+  const { content, imageUrl } = props;
+  const {handleOnClick} = usePostDetail();
 
   return (
     <div
-      key={content.id}
+      onClick={() => handleOnClick(content.id)}
       className="w-full lg:w-1/2 2xl:w-1/3 px-4 cursor-pointer"
     >
       <div className="h-full p-8 text-center hover:bg-white rounded-md hover:shadow-xl transition duration-200">
