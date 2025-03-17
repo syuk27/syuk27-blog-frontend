@@ -19,9 +19,9 @@ function App() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (user) {
+    // if (user) {
       setLoginUser(user);
-    }
+    // }
   }, [user]);
 
   return (
