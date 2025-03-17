@@ -1,10 +1,19 @@
 import { useLocation } from "react-router-dom";
+import PostDetailContentV1 from "../../components/posts/detail/PostDetailContentV1";
+import { useEffect, useState } from "react";
 
 const PostDetailPage = () => {
   const location = useLocation();
-  const post = location.state;
+  const { post, version } = location.state;
+  const [content, setContent] = useState("");
 
-  console.log("PostDetailPage", post);
+  const contentComponentMap = {
+    v1: PostDetailContentV1,
+  };
+
+  useEffect(() => {
+    setContent(contentComponentMap[version]({ data: post }));
+  }, [version]);
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
@@ -13,17 +22,7 @@ const PostDetailPage = () => {
         {/* {post.author} • {post.date} */}
       </p>
       <hr className="mb-4" />
-      <img src={post.postBlockList[0].cloudImg_url}></img>
-      <div
-        dangerouslySetInnerHTML={{ __html: post.postBlockList[0].content }}
-        className="text-gray-800 leading-relaxed"
-      />
-      <img src={post.postBlockList[1].cloudImg_url}></img>
-      <div
-        dangerouslySetInnerHTML={{ __html: post.postBlockList[1].content }}
-        className="text-gray-800 leading-relaxed"
-      />
-
+      {content}
       {/* 뒤로가기 버튼 */}
       <button
         onClick={() => window.history.back()}

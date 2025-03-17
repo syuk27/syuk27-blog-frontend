@@ -1,8 +1,7 @@
-import usePostDetail from "../../../hooks/posts/usePostDetail";
+import usePostDetail from "../../../hooks/posts/usePostDetailV1";
 
 const PostContent = (props) => {
-  const { content, imageUrl } = props;
-  const {handleOnClick} = usePostDetail();
+  const { content, imageUrl, handleOnClick } = props;
 
   return (
     <div

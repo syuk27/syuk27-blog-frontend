@@ -11,6 +11,7 @@ import { createAdminPost } from "../../../api/posts/post";
 import { cloudinarySignature, handleCloudinaryUpload } from "../CloudinaryUploader";
 import SortableItem from "./SortableItem";
 import useLoginUser from "../../../hooks/user/useLoginUser";
+import { current } from "@reduxjs/toolkit";
 
 //dnd-kit, cloudinary 사용 
 const PostEditor = () => {
@@ -30,10 +31,15 @@ const PostEditor = () => {
     titleRef.current.focus(); // 컴포넌트가 마운트되면 자동으로 포커스
   }, []);
 
+  useEffect(() => {
+    console.log("posts", posts);
+  }, [posts]);
+
   //📝 🗑️ 📸 ✍️ 🔤 🔄
 
   // 새 블록 추가 (글 + 이미지 가능)
   const addPost = () => {
+    quillRefs.current.push([]);
     setPosts((prevPosts) => [
       ...prevPosts,
       {
@@ -43,8 +49,6 @@ const PostEditor = () => {
         blockOrder: ++prevPosts.length,
       },
     ]);
-
-    console.log("posts", posts);
   };
 
   // 이미지 추가
@@ -110,7 +114,7 @@ const PostEditor = () => {
         return {
           ...post,
           cloudImg_url: response,
-          content: quillRefs.current[index + 1].value,
+          content: quillRefs.current[index].value,
           id: "",
         };
       })
@@ -189,14 +193,14 @@ const PostEditor = () => {
                 ✏️ 글을 추가하세요!
               </p>
             ) : (
-              posts.map((post) => (
+              posts.map((post, index) => (
                 <SortableItem
                   key={post.id}
                   id={post.id}
                   post={post}
                   onDelete={deletePost}
                   onImageUpload={addImage}
-                  quillRefs={quillRefs}
+                  quillRef={(el) => (quillRefs.current[index] = el)}
                 />
               ))
             )}
