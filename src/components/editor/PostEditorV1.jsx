@@ -7,11 +7,10 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { createAdminPost } from "../../../api/posts/post";
-import { cloudinarySignature, handleCloudinaryUpload } from "../CloudinaryUploader";
-import SortableItem from "./SortableItem";
-import useLoginUser from "../../../hooks/user/useLoginUser";
-import { current } from "@reduxjs/toolkit";
+import { createAdminPost } from "../../api/posts/post";
+import useLoginUser from "../../hooks/user/useLoginUser";
+import { cloudinarySignature, handleCloudinaryUpload } from "./CloudinaryUploader";
+import SortableItem from "./dndkit/SortableItem";
 
 //dnd-kit, cloudinary 사용 
 const PostEditor = () => {

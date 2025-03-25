@@ -12,7 +12,8 @@ export default function AppRoutes() {
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<BlogPostsPage />} />
-        <Route path="/admin_editor" element={<AdminEditorPage />} />
+        <Route path="/admin_editor/v1" element={<AdminEditorPage version="v1"/>} />
+        <Route path="/admin_editor/v2" element={<AdminEditorPage version="v2"/>} />
         <Route path="/blog_posts" element={<BlogPostsPage />} />
         <Route path="/posts/detail" element={<PostDetailPage />} />
         <Route path="/sign_in" element={<SignInPage />} />
