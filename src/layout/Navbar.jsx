@@ -19,10 +19,16 @@ const Navbar = memo(({user}) => {
           posts
         </Link>
         <Link
-          to="/admin_editor"
+          to="/admin_editor/v1"
           className="text-dark me-3.5 text-decoration-none"
         >
-          admin_editor
+          admin_editor v1
+        </Link>
+        <Link
+          to="/admin_editor/v2"
+          className="text-dark me-3.5 text-decoration-none"
+        >
+          admin_editor v2
         </Link>
       </div>
       <div className="[display:ruby]">

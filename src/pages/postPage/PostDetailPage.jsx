@@ -12,14 +12,16 @@ const PostDetailPage = () => {
   };
 
   useEffect(() => {
+    console.log("post", post)
     setContent(contentComponentMap[version]({ data: post }));
   }, [version]);
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h1 className="text-2xl font-bold mb-4">{post.title}</h1>
+      <h1 className="text-3xl font-bold mb-3">{post.title}</h1>
+      <strong className="text-gray-600 text-lg">{post.description}</strong>
       <p className="text-gray-600 text-sm mb-2">
-        {/* {post.author} • {post.date} */}
+        {post.author} • {post.createDate}
       </p>
       <hr className="mb-4" />
       {content}
