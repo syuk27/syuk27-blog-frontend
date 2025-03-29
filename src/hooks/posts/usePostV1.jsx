@@ -5,7 +5,6 @@ import usePostDetailV1 from "./usePostDetailV1";
 
 const usePostV1 = (page) => {
   const [totalpages, setTotalPages] = useState(1);
-  const [contents, setContents] = useState([]);
   const [features, setFeatures] = useState([]);
   const { handleOnClick } = usePostDetailV1();
 
@@ -17,31 +16,28 @@ const usePostV1 = (page) => {
           tmpTotalPages = response.data.totalPages;
         }
         setTotalPages(tmpTotalPages);
-        setContents(response.data.content);
+
+        setFeatures(
+          response.data.content.map((content) => {
+            const data = content.postBlockList[0];
+    
+            let imageUrl = "/non_image.svg";
+            if (data.cloudImg_url !== "") {
+              imageUrl = data.cloudImg_url;
+            }
+            return (
+              <PostContent
+                key={content.id}
+                content={content}
+                imageUrl={imageUrl}
+                handleOnClick={handleOnClick}
+              />
+            );
+          })
+        );
       }
     });
-  }, [page]);
-
-  useEffect(() => {
-    setFeatures(
-      contents.map((content) => {
-        const data = content.postBlockList[0];
-
-        let imageUrl = "/non_image.svg";
-        if (data.cloudImg_url !== "") {
-          imageUrl = data.cloudImg_url;
-        }
-        return (
-          <PostContent
-            key={content.id}
-            content={content}
-            imageUrl={imageUrl}
-            handleOnClick={handleOnClick}
-          />
-        );
-      })
-    );
-  }, [contents]);
+  }, []);
 
   return { totalpages, features };
 };

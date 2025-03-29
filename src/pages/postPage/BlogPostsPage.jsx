@@ -3,7 +3,6 @@ import Pagination from "../../components/Pagination";
 import usePostV1 from "../../hooks/posts/usePostV1";
 
 const BlogPostsPage = () => {
-  console.log("BlogPostsPage")
   const [page, setPage] = useState(1);
   const {totalpages, features} = usePostV1(page);
 

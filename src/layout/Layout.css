@@ -16,14 +16,18 @@
 /** ReactQuill */
 .ql-editor {
   min-height: 200px;
+  height: auto;
 }
 
 .ql-toolbar {
   z-index: 1000 !important;
+  border: 0 !important;
+  border-bottom: 1px solid #e5e7eb !important;
 }
 
 .ql-container {
   z-index: auto;
+  border: 0 !important;
 }
 
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="16px"]::before {
@@ -60,4 +64,13 @@
 
 .ql-editor {
   font-size: 16px;
+}
+
+.quill {
+  @apply w-full text-base font-semibold border border-gray-300 rounded-lg 
+  focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition duration-200;
+}
+
+.ql-editor.ql-blank[data-placeholder]::before {
+
 }
