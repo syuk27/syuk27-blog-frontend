@@ -2,6 +2,8 @@ import React, { forwardRef, useEffect, useRef, useState } from "react";
 import ReactQuill, { Quill } from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 
+var firstRdr = true;
+
 const fontSize = [
   "16px",
   "18px",
@@ -18,7 +20,7 @@ const Size = Quill.import("attributors/style/size");
 Size.whitelist = fontSize;
 Quill.register(Size, true);
 
-const modules = {
+const customModules = {
   toolbar: {
     container: [
       [{ font: [] }],
@@ -33,7 +35,7 @@ const modules = {
   },
 };
 
-const formats = [
+const customFormats = [
   "font",
   "size",
   // "header",
@@ -47,6 +49,9 @@ const formats = [
   "background",
   "script",
 ];
+
+let modules;
+let formats;
 
 const ImageBlot = Quill.import("formats/image");
 class CustomImageBlot extends ImageBlot {
@@ -68,12 +73,57 @@ class CustomImageBlot extends ImageBlot {
 // Quill.register("formats/custom-image", CustomImageBlot, true);
 
 const CustomQuill = forwardRef((props, ref) => {
-  let { className, onPointerDown, placeholder, count, isImage } = props;
+  let { onPointerDown, count, isImage } = props;
   if (!count) count = 1;
 
   const quillRef = useRef();
   const [pickerfontSize, setPickerFontSize] = useState("16px");
   const sizePickerId = "sizePicker_" + count;
+
+  const handleImageUpload = (e) => {
+    console.log("handleImageUpload", e);
+
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files[0];
+      console.log("file", file, input);
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          const quill = quillRef.current.getEditor();
+          const range = quill.getSelection();
+          quill.insertEmbed(range.index, "image", reader.result);
+        };
+      }
+    };
+  };
+
+  modules = { ...customModules };
+  formats = [...customFormats];
+
+  console.log("modules1", modules, customModules);
+  console.log("formats1", formats);
+
+  if (isImage && firstRdr) {
+    modules.toolbar.container.splice(2, 0, [{ image: "image" }]);
+    formats.splice(2, 0, "image");
+
+    modules.toolbar.handlers = {
+      image: handleImageUpload,
+    };
+    firstRdr = false;
+  }
+
+  console.log("modules2", modules);
+  console.log("formats2", formats);
 
   useEffect(() => {
     if (!ref) {
@@ -90,10 +140,12 @@ const CustomQuill = forwardRef((props, ref) => {
     }
 
     ref.current = quillRef.current;
-  }, [ref, count]);
+  }, [quillRef, count]);
 
   useEffect(() => {
-    quillRef.current.focus();
+    if (!isImage) {
+      quillRef.current.focus();
+    }
 
     if (quillRef.current) {
       const quillEditor = quillRef.current?.getEditor();
@@ -143,7 +195,7 @@ const CustomQuill = forwardRef((props, ref) => {
           img.setAttribute("draggable", true);
 
           img.addEventListener("dragstart", (event) => {
-            console.log("dragstart", event)
+            console.log("dragstart", event);
             draggedImage = event.target;
             event.dataTransfer.setData("text/plain", draggedImage.outerHTML);
             draggedImage.classList.add("dragging");
@@ -151,14 +203,14 @@ const CustomQuill = forwardRef((props, ref) => {
           });
 
           img.addEventListener("dragend", (event) => {
-            console.log("dragend", event)
+            console.log("dragend", event);
             draggedImage.classList.remove("dragging");
           });
         });
       };
 
       quillRoot.addEventListener("drop", (event) => {
-        console.log("drop", event)
+        console.log("drop", event);
         event.preventDefault();
         const html = event.dataTransfer?.getData("text/plain");
 
@@ -184,46 +236,11 @@ const CustomQuill = forwardRef((props, ref) => {
       setTimeout(setDraggableImages, 500);
 
       quillEditor.on("text-change", (event) => {
-        console.log("test-chg", event)
+        console.log("test-chg", event);
         setTimeout(setDraggableImages, 0);
       });
     }
   }, []);
-
-  useEffect(() => {
-    const style = document.createElement("style");
-    style.textContent = `#${sizePickerId}::before {
-      content: '${pickerfontSize}' !important;
-      }`;
-
-    document.head.appendChild(style);
-  }, [pickerfontSize]);
-
-  const handleImageUpload = (e) => {
-    console.log("handleImageUpload", e);
-
-    const input = document.createElement("input");
-    input.setAttribute("type", "file");
-    input.setAttribute("accept", "image/*");
-    input.click();
-
-    input.onchange = async () => {
-      const file = input.files[0];
-      console.log("file", file, input);
-      if (file) {
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => {
-          const quill = quillRef.current.getEditor();
-          const range = quill.getSelection();
-          quill.insertEmbed(range.index, "image", reader.result);
-        };
-      }
-    };
-  };
 
   const handleDrop = (draggedImage, quillEditor) => {
     console.log("Drop Event Triggered");
@@ -239,36 +256,37 @@ const CustomQuill = forwardRef((props, ref) => {
   };
 
   const handleDrop2 = (event) => {
-    console.log("handleDrop2", event)
+    console.log("handleDrop2", event);
     event.preventDefault();
     const editor = quillRef.current.getEditor();
     const range = editor.getSelection();
 
     const imageUrl = event.dataTransfer.getData("text/plain");
     if (imageUrl) {
-      editor.insertEmbed(range ? range.index : editor.getLength(), "custom-image", imageUrl);
+      editor.insertEmbed(
+        range ? range.index : editor.getLength(),
+        "custom-image",
+        imageUrl
+      );
     }
   };
 
-  if (isImage) {
-    modules.toolbar.container.splice(2, 0, [{ image: "image" }]);
-    formats.splice(2, 0, "image");
+  useEffect(() => {
+    const style = document.createElement("style");
+    style.textContent = `#${sizePickerId}::before {
+      content: '${pickerfontSize}' !important;
+      }`;
 
-    modules.toolbar.handlers = {
-      image: handleImageUpload,
-    };
-    console.log("modules", modules);
-  }
+    document.head.appendChild(style);
+  }, [pickerfontSize]);
 
   return (
     <div
-      // onDragOver={(e) => e.preventDefault()}
-      // onDrop={handleDrop2}
-      className={className}
-      // onPointerDown={onPointerDown}
+    // onDragOver={(e) => e.preventDefault()}
+    // onDrop={handleDrop2}
+    // onPointerDown={onPointerDown}
     >
       <ReactQuill
-        placeholder={placeholder}
         modules={modules}
         formats={formats}
         ref={quillRef}

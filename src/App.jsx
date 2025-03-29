@@ -1,27 +1,27 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import "./App.css";
+import useLoginUser from "./hooks/user/useLoginUser";
 import Footer from "./layout/Footer";
 import Navbar from "./layout/Navbar";
 import AppRoutes from "./routes/AppRoutes";
 import { fetchUser } from "./store/userSlice";
-import useLoginUser from "./hooks/user/useLoginUser";
 
 function App() {
   const dispatch = useDispatch();
   const { user } = useLoginUser();
-  const [loginUser, setLoginUser] = useState("");
+  const [loginUser, setLoginUser] = useState(null);
 
   useEffect(() => {
     dispatch(fetchUser());
   }, [dispatch]);
 
   useEffect(() => {
-    // if (user) {
+    if (user) {
       setLoginUser(user);
-    // }
+    }
   }, [user]);
 
   return (

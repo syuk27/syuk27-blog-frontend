@@ -41,9 +41,7 @@ const SortableItem = ({ id, post, onDelete, onImageUpload, quillRef }) => {
 
       {/* 글 입력 */}
       <CustomQuill
-        className={`w-full p-2 border rounded-md resize-none font-semibold text-lg`}
         onPointerDown={handleButtonClick}
-        placeholder="여기에 글을 입력하세요..."
         count={post.blockOrder}
         ref={quillRef}
       />
