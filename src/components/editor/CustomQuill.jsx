@@ -1,8 +1,7 @@
 import React, { forwardRef, useEffect, useRef, useState } from "react";
+import _ from "lodash";
 import ReactQuill, { Quill } from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
-
-var firstRdr = true;
 
 const fontSize = [
   "16px",
@@ -76,9 +75,12 @@ const CustomQuill = forwardRef((props, ref) => {
   let { onPointerDown, count, isImage } = props;
   if (!count) count = 1;
 
-  const quillRef = useRef();
+  const quillRef = useRef(null);
+  const draggedImageRef = useRef(null);
   const [pickerfontSize, setPickerFontSize] = useState("16px");
   const sizePickerId = "sizePicker_" + count;
+
+  const [qImages, setQImages] = useState([]);
 
   const handleImageUpload = (e) => {
     console.log("handleImageUpload", e);
@@ -95,35 +97,32 @@ const CustomQuill = forwardRef((props, ref) => {
         const formData = new FormData();
         formData.append("file", file);
 
+        setQImages(formData);
+
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = () => {
           const quill = quillRef.current.getEditor();
           const range = quill.getSelection();
           quill.insertEmbed(range.index, "image", reader.result);
+
+          console.log("quill", quill);
         };
       }
     };
   };
 
-  modules = { ...customModules };
+  modules = _.cloneDeep(customModules);
   formats = [...customFormats];
 
-  console.log("modules1", modules, customModules);
-  console.log("formats1", formats);
-
-  if (isImage && firstRdr) {
+  if (isImage) {
     modules.toolbar.container.splice(2, 0, [{ image: "image" }]);
     formats.splice(2, 0, "image");
 
     modules.toolbar.handlers = {
       image: handleImageUpload,
     };
-    firstRdr = false;
   }
-
-  console.log("modules2", modules);
-  console.log("formats2", formats);
 
   useEffect(() => {
     if (!ref) {
@@ -137,10 +136,11 @@ const CustomQuill = forwardRef((props, ref) => {
 
     if (typeof ref === "function") {
       ref(quillRef.current);
+      return;
     }
 
     ref.current = quillRef.current;
-  }, [quillRef, count]);
+  }, [ref, count]);
 
   useEffect(() => {
     if (!isImage) {
@@ -149,7 +149,6 @@ const CustomQuill = forwardRef((props, ref) => {
 
     if (quillRef.current) {
       const quillEditor = quillRef.current?.getEditor();
-      const quillRoot = quillEditor?.root;
       const quillContainer = quillEditor?.container;
 
       const sizePicker = quillContainer?.parentElement.querySelector(
@@ -165,81 +164,103 @@ const CustomQuill = forwardRef((props, ref) => {
           setPickerFontSize(event.target.dataset.value);
         });
       });
+    }
+  }, []);
 
-      // const asd = new Quill(quillRef.current, {
-      //   theme: "snow",
-      // });
+  useEffect(() => {
+    console.log("quillRef123123", quillRef, qImages);
 
-      // let draggedImage = null;
-      // asd.root.addEventListener("dragstart", (event) => {
-      //   console.log("dragstart", event);
-      //   if (event.target.tagName === "IMG") {
-      //     draggedImage = event.target;
-      //     event.dataTransfer.setData("text/plain", draggedImage.outerHTML);
-      //     event.target.style.opacity = "0.5";
-      //   }
-      // });
-
-      // asd.root.addEventListener("dragover", (e) => e.preventDefault());
-
-      // asd.root.addEventListener("drop", (event) => {
-      //   event.preventDefault();
-      //   console.log("asdasdas", event)
-      //   handleDrop(draggedImage, quillEditor);
-      // });
-
+    // setTimeout(() => {
+      const quillEditor = quillRef.current?.getEditor();
+      const quillRoot = quillEditor?.root;
       let draggedImage = null;
+
       const setDraggableImages = async () => {
         const imgs = quillRoot.querySelectorAll("img");
         imgs.forEach((img) => {
+          console.log("img", img);
+          img.style.width = "350px";
           img.setAttribute("draggable", true);
 
           img.addEventListener("dragstart", (event) => {
             console.log("dragstart", event);
-            draggedImage = event.target;
-            event.dataTransfer.setData("text/plain", draggedImage.outerHTML);
-            draggedImage.classList.add("dragging");
+
+            draggedImageRef.current = img;
+
+            // draggedImage = event.target;
+            // event.dataTransfer.setData("text/plain", draggedImage.outerHTML);
+            // draggedImage.classList.add("dragging");
             // event.target.style.opacity = "0.5";
           });
 
-          img.addEventListener("dragend", (event) => {
-            console.log("dragend", event);
-            draggedImage.classList.remove("dragging");
-          });
+          // img.addEventListener("dragend", (event) => {
+          //   console.log("dragend", event);
+          //   draggedImage.classList.remove("dragging");
+          // });
         });
       };
 
-      quillRoot.addEventListener("drop", (event) => {
-        console.log("drop", event);
+      const handleDrop = (event) => {
         event.preventDefault();
-        const html = event.dataTransfer?.getData("text/plain");
+        if (!draggedImageRef.current) return;
 
-        if (html) {
-          const dragging = quillRoot.querySelector("img.dragging");
-          if (dragging) dragging.remove();
+        const range = quillEditor.getSelection();
+        if (!range) return;
 
-          const range = document.createRangeFromPoint?.(
-            event.clientX,
-            event.clientY
-          );
+        const imageUrl = draggedImageRef.current.getAttribute("src");
 
-          if (range) {
-            const frag = range.createContextualFragment(html);
-            range.insertNode(frag);
+        draggedImageRef.current.parentNode.removeChild(draggedImageRef.current);
 
-            quillEditor.update();
-            setTimeout(setDraggableImages, 0);
-          }
-        }
+        quillEditor.insertEmbed(range.index, "image", imageUrl);
+        quillEditor.setSelection(range.index + 1);
+
+        draggedImageRef.current = null;
+      };
+
+      quillRoot.addEventListener("drop", handleDrop);
+
+      quillEditor.on("editor-change", (event) => {
+        console.log("textchg", event);
+        setDraggableImages(); // 텍스트(=이미지 포함) 변경될 때마다 다시 처리
       });
 
-      setTimeout(setDraggableImages, 500);
+      setDraggableImages();
 
-      quillEditor.on("text-change", (event) => {
-        console.log("test-chg", event);
-        setTimeout(setDraggableImages, 0);
-      });
-    }
+      return () => {
+        quillRoot.removeEventListener("drop", handleDrop);
+      };
+
+      // quillRoot.addEventListener("drop", (event) => {
+      //   console.log("drop", event);
+      //   event.preventDefault();
+      //   const html = event.dataTransfer?.getData("text/plain");
+
+      //   if (html) {
+      //     const dragging = quillRoot.querySelector("img.dragging");
+      //     if (dragging) dragging.remove();
+
+      //     const range = document.createRangeFromPoint?.(
+      //       event.clientX,
+      //       event.clientY
+      //     );
+
+      //     if (range) {
+      //       const frag = range.createContextualFragment(html);
+      //       range.insertNode(frag);
+
+      //       quillEditor.update();
+      //       setTimeout(setDraggableImages, 0);
+      //     }
+      //   }
+      // });
+
+      // setTimeout(setDraggableImages, 500);
+
+      // quillEditor.on("text-change", (event) => {
+      //   console.log("test-chg", event);
+      //   setTimeout(setDraggableImages, 0);
+      // });
+    // }, 500);
   }, []);
 
   const handleDrop = (draggedImage, quillEditor) => {

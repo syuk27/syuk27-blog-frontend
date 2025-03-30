@@ -5,7 +5,11 @@ const PostEditorV2 = () => {
   const quillRef = useRef();
   const titleRef = useRef(null);
   const descriptionRef = useRef(null);
-  const handleButtonClick = () => {};
+  const handleButtonClick = () => {
+
+  
+    console.log("quillRef2222", quillRef)
+  };
 
   return (
     <div className="space-y-2">
