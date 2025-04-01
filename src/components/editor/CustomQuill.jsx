@@ -106,10 +106,64 @@ const CustomQuill = forwardRef((props, ref) => {
           const range = quill.getSelection();
           quill.insertEmbed(range.index, "image", reader.result);
 
+          quill.setSelection(range.index + 2);
           console.log("quill", quill);
+
+          const quillRoot = quill?.root;
+          setDraggableImages(quillRoot);
         };
       }
     };
+  };
+
+  
+  const setDraggableImages = async (quillRoot) => {
+    const imgs = quillRoot.querySelectorAll("img:not([draggable='true'])");
+    imgs.forEach((img) => {
+      console.log("img", img);
+      img.style.width = "50%";
+      img.style.margin = "0 auto";
+
+      img.setAttribute("draggable", true);
+
+      img.addEventListener("dragstart", (event) => {
+        console.log("dragstart", event);
+
+        draggedImageRef.current = img;
+        event.dataTransfer.effectAllowed = 'move';
+        // draggedImage = event.target;
+        // event.dataTransfer.setData("text/plain", draggedImage.outerHTML);
+        // draggedImage.classList.add("dragging");
+        // event.target.style.opacity = "0.5";
+      });
+
+      // img.addEventListener("dragend", (event) => {
+      //   console.log("dragend", event);
+      //   draggedImage.classList.remove("dragging");
+      // });
+    });
+
+    quillRoot.addEventListener("drop", handleDropTest);
+  };
+
+  const handleDropTest = (event) => {
+    console.log("handleDrop event", event);
+    event.preventDefault();
+    if (!draggedImageRef.current) return;
+
+    const range = quillEditor.getSelection();
+    if (!range) return;
+
+    const imageUrl = draggedImageRef.current.getAttribute("src");
+
+    draggedImageRef.current.parentNode.removeChild(draggedImageRef.current);
+
+    console.log("handleDrop imageUrl", imageUrl);
+
+    quillEditor.insertEmbed(range.index, "image", imageUrl);
+    quillEditor.setSelection(range.index + 1);
+
+    draggedImageRef.current = null;
   };
 
   modules = _.cloneDeep(customModules);
@@ -165,102 +219,6 @@ const CustomQuill = forwardRef((props, ref) => {
         });
       });
     }
-  }, []);
-
-  useEffect(() => {
-    console.log("quillRef123123", quillRef, qImages);
-
-    // setTimeout(() => {
-      const quillEditor = quillRef.current?.getEditor();
-      const quillRoot = quillEditor?.root;
-      let draggedImage = null;
-
-      const setDraggableImages = async () => {
-        const imgs = quillRoot.querySelectorAll("img");
-        imgs.forEach((img) => {
-          console.log("img", img);
-          img.style.width = "350px";
-          img.setAttribute("draggable", true);
-
-          img.addEventListener("dragstart", (event) => {
-            console.log("dragstart", event);
-
-            draggedImageRef.current = img;
-
-            // draggedImage = event.target;
-            // event.dataTransfer.setData("text/plain", draggedImage.outerHTML);
-            // draggedImage.classList.add("dragging");
-            // event.target.style.opacity = "0.5";
-          });
-
-          // img.addEventListener("dragend", (event) => {
-          //   console.log("dragend", event);
-          //   draggedImage.classList.remove("dragging");
-          // });
-        });
-      };
-
-      const handleDrop = (event) => {
-        event.preventDefault();
-        if (!draggedImageRef.current) return;
-
-        const range = quillEditor.getSelection();
-        if (!range) return;
-
-        const imageUrl = draggedImageRef.current.getAttribute("src");
-
-        draggedImageRef.current.parentNode.removeChild(draggedImageRef.current);
-
-        quillEditor.insertEmbed(range.index, "image", imageUrl);
-        quillEditor.setSelection(range.index + 1);
-
-        draggedImageRef.current = null;
-      };
-
-      quillRoot.addEventListener("drop", handleDrop);
-
-      quillEditor.on("editor-change", (event) => {
-        console.log("textchg", event);
-        setDraggableImages(); // 텍스트(=이미지 포함) 변경될 때마다 다시 처리
-      });
-
-      setDraggableImages();
-
-      return () => {
-        quillRoot.removeEventListener("drop", handleDrop);
-      };
-
-      // quillRoot.addEventListener("drop", (event) => {
-      //   console.log("drop", event);
-      //   event.preventDefault();
-      //   const html = event.dataTransfer?.getData("text/plain");
-
-      //   if (html) {
-      //     const dragging = quillRoot.querySelector("img.dragging");
-      //     if (dragging) dragging.remove();
-
-      //     const range = document.createRangeFromPoint?.(
-      //       event.clientX,
-      //       event.clientY
-      //     );
-
-      //     if (range) {
-      //       const frag = range.createContextualFragment(html);
-      //       range.insertNode(frag);
-
-      //       quillEditor.update();
-      //       setTimeout(setDraggableImages, 0);
-      //     }
-      //   }
-      // });
-
-      // setTimeout(setDraggableImages, 500);
-
-      // quillEditor.on("text-change", (event) => {
-      //   console.log("test-chg", event);
-      //   setTimeout(setDraggableImages, 0);
-      // });
-    // }, 500);
   }, []);
 
   const handleDrop = (draggedImage, quillEditor) => {
