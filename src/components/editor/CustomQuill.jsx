@@ -72,15 +72,13 @@ class CustomImageBlot extends ImageBlot {
 // Quill.register("formats/custom-image", CustomImageBlot, true);
 
 const CustomQuill = forwardRef((props, ref) => {
-  let { onPointerDown, count, isImage } = props;
+  let { onPointerDown, count, isImage, formData } = props;
   if (!count) count = 1;
 
   const quillRef = useRef(null);
   const draggedImageRef = useRef(null);
   const [pickerfontSize, setPickerFontSize] = useState("16px");
   const sizePickerId = "sizePicker_" + count;
-
-  const [qImages, setQImages] = useState([]);
 
   const handleImageUpload = (e) => {
     console.log("handleImageUpload", e);
@@ -94,10 +92,10 @@ const CustomQuill = forwardRef((props, ref) => {
       const file = input.files[0];
       console.log("file", file, input);
       if (file) {
-        const formData = new FormData();
-        formData.append("file", file);
+        // const formData = new FormData();
+        formData.append("files", file);
 
-        setQImages(formData);
+        // setQImages(formData);
 
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -116,7 +114,6 @@ const CustomQuill = forwardRef((props, ref) => {
     };
   };
 
-  
   const setDraggableImages = async (quillRoot) => {
     const imgs = quillRoot.querySelectorAll("img:not([draggable='true'])");
     imgs.forEach((img) => {
@@ -130,7 +127,7 @@ const CustomQuill = forwardRef((props, ref) => {
         console.log("dragstart", event);
 
         draggedImageRef.current = img;
-        event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.effectAllowed = "move";
         // draggedImage = event.target;
         // event.dataTransfer.setData("text/plain", draggedImage.outerHTML);
         // draggedImage.classList.add("dragging");
@@ -261,16 +258,11 @@ const CustomQuill = forwardRef((props, ref) => {
 
   return (
     <div
-    // onDragOver={(e) => e.preventDefault()}
-    // onDrop={handleDrop2}
-    // onPointerDown={onPointerDown}
+      onDragOver={(e) => e.preventDefault()}
+      // onDrop={handleDrop2}
+      // onPointerDown={onPointerDown}
     >
-      <ReactQuill
-        modules={modules}
-        formats={formats}
-        ref={quillRef}
-        // tabIndex={0}
-      />
+      <ReactQuill modules={modules} formats={formats} ref={quillRef} />
     </div>
   );
 });

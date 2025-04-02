@@ -1,14 +1,21 @@
 import { useRef } from "react";
 import CustomQuill from "./CustomQuill";
+import { useState } from "react";
+import { createAdminPostImage } from "../../api/posts/post";
 
 const PostEditorV2 = () => {
-  const quillRef = useRef();
   const titleRef = useRef(null);
   const descriptionRef = useRef(null);
-  const handleButtonClick = () => {
+  const quillRef = useRef();
 
+  const [qImages, setQImages] = useState([]);
+  const formData = new FormData();
+
+  const handleButtonClick = async () => {
+    const response = await createAdminPostImage(formData);
   
-    console.log("quillRef2222", quillRef)
+    console.log("handleButtonClick", quillRef, formData)
+    console.log("handleButtonClick response", response)
   };
 
   return (
@@ -34,6 +41,7 @@ const PostEditorV2 = () => {
           onPointerDown={handleButtonClick}
           ref={quillRef}
           isImage={true}
+          formData={formData}
         />
       </div>
       <div className="flex justify-end">
